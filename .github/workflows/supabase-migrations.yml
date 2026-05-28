@@ -1,0 +1,96 @@
+name: Supabase Migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      database_url:
+        description: "Optional override for DATABASE_URL (leave empty to use GitHub secret)"
+        required: false
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - "supabase/migrations/**/*.sql"
+      - ".github/workflows/supabase-migrations.yml"
+
+concurrency:
+  group: supabase-migrations
+  cancel-in-progress: false
+
+jobs:
+  apply-migrations:
+    name: Apply Supabase migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve database URL
+        shell: bash
+        env:
+          SECRET_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          INPUT_DATABASE_URL: ${{ inputs.database_url }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          database_url="$SECRET_DATABASE_URL"
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && -n "$INPUT_DATABASE_URL" ]]; then
+            database_url="$INPUT_DATABASE_URL"
+          fi
+
+          if [[ -z "$database_url" ]]; then
+            echo "DATABASE_URL is required. Configure the secret or pass a workflow_dispatch input."
+            exit 1
+          fi
+
+          echo "DATABASE_URL=$database_url" >> "$GITHUB_ENV"
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Apply versioned SQL migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${DATABASE_URL:-}" ]]; then
+            echo "DATABASE_URL is required. Configure the secret or pass a workflow_dispatch input."
+            exit 1
+          fi
+
+          migration_table="_schema_migrations"
+
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "CREATE TABLE IF NOT EXISTS _schema_migrations (filename text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now());"
+
+          mapfile -t migrations < <(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort)
+
+          if [[ ${#migrations[@]} -eq 0 ]]; then
+            echo "No migrations found under supabase/migrations"
+            exit 0
+          fi
+
+          for migration in "${migrations[@]}"; do
+            filename="$(basename "$migration")"
+            already_applied="$(psql "$DATABASE_URL" -tAc "SELECT 1 FROM ${migration_table} WHERE filename = '${filename}' LIMIT 1")"
+
+            if [[ "$already_applied" == "1" ]]; then
+              echo "Skipping already applied migration: ${filename}"
+              continue
+            fi
+
+            echo "Applying migration: ${filename}"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$migration"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO ${migration_table} (filename) VALUES ('${filename}')"
+          done
+
+      - name: Validate schema smoke check
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "SELECT 1 FROM event_settings LIMIT 1;"

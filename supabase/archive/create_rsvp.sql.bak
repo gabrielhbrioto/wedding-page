@@ -1,0 +1,275 @@
+-- =====================================================
+-- SITE DE CASAMENTO - DDL COMPLETO (VERSÃO FINAL MVP)
+-- PostgreSQL / Supabase Compatible
+-- =====================================================
+
+create extension if not exists pgcrypto;
+
+-- =====================================================
+-- 1. ENUMS
+-- =====================================================
+
+create type invite_type as enum (
+  'CERIMONIA',
+  'CERIMONIA_JANTAR',
+  'VIP'
+);
+
+create type member_status as enum (
+  'CERIMONIA_E_JANTAR',
+  'SOMENTE_CERIMONIA',
+  'AUSENTE'
+);
+
+create type rsvp_status as enum (
+  'PENDENTE',
+  'RESPONDIDO'
+);
+
+-- =====================================================
+-- 2. TABELA PRINCIPAL: GRUPOS / FAMÍLIAS
+-- =====================================================
+
+create table invitation_groups (
+    id uuid primary key default gen_random_uuid(),
+
+    token varchar(30) not null unique,
+
+    nome_grupo varchar(150) not null,
+    -- responsavel_nome varchar(150),
+    -- telefone varchar(30),
+    -- email varchar(150),
+
+    tipo_convite invite_type not null default 'CERIMONIA',
+
+    observacoes text,
+
+    -- max_pessoas integer default 10,
+
+    rsvp_status rsvp_status not null default 'PENDENTE',
+
+    responded_at timestamp,
+
+    created_at timestamp not null default now(),
+    updated_at timestamp not null default now()
+);
+
+create index idx_invitation_groups_token
+on invitation_groups(token);
+
+create index idx_invitation_groups_tipo
+on invitation_groups(tipo_convite);
+
+-- =====================================================
+-- 3. MEMBROS DO GRUPO
+-- =====================================================
+
+create table group_members (
+    id uuid primary key default gen_random_uuid(),
+
+    group_id uuid not null references invitation_groups(id) on delete cascade,
+
+    nome varchar(150) not null,
+
+    pre_cadastrado boolean not null default true,
+
+    ordem_exibicao integer default 0,
+
+    created_at timestamp not null default now()
+);
+
+create index idx_group_members_group
+on group_members(group_id);
+
+-- =====================================================
+-- 4. RESPOSTA PRINCIPAL RSVP
+-- =====================================================
+
+create table rsvp_responses (
+    id uuid primary key default gen_random_uuid(),
+
+    group_id uuid not null unique
+        references invitation_groups(id) on delete cascade,
+
+    mensagem text,
+    -- restricoes_alimentares text,
+
+    total_confirmados integer default 0,
+
+    created_at timestamp not null default now(),
+    updated_at timestamp not null default now()
+);
+
+create index idx_rsvp_group
+on rsvp_responses(group_id);
+
+-- =====================================================
+-- 5. STATUS INDIVIDUAL DOS MEMBROS
+-- (USADO PARA JANTAR / VIP)
+-- =====================================================
+
+create table rsvp_member_status (
+    id uuid primary key default gen_random_uuid(),
+
+    response_id uuid not null
+        references rsvp_responses(id) on delete cascade,
+
+    member_id uuid not null
+        references group_members(id) on delete cascade,
+
+    status member_status not null,
+
+    created_at timestamp not null default now(),
+
+    unique(response_id, member_id)
+);
+
+create index idx_member_status_response
+on rsvp_member_status(response_id);
+
+-- =====================================================
+-- 6. NOMES INFORMADOS LIVREMENTE
+-- (USADO PARA CERIMÔNIA)
+-- =====================================================
+
+create table ceremony_guest_names (
+    id uuid primary key default gen_random_uuid(),
+
+    response_id uuid not null
+        references rsvp_responses(id) on delete cascade,
+
+    nome varchar(150) not null,
+
+    created_at timestamp not null default now()
+);
+
+create index idx_ceremony_guest_names_response
+on ceremony_guest_names(response_id);
+
+-- =====================================================
+-- 7. CONFIGURAÇÕES DO EVENTO
+-- =====================================================
+
+create table event_settings (
+    id uuid primary key default gen_random_uuid(),
+
+    nome_casal varchar(200) not null,
+    data_evento timestamp not null,
+
+    local_nome varchar(200),
+    endereco text,
+
+    google_maps_url text,
+
+    mensagem_home text,
+
+    ativo boolean default true,
+
+    created_at timestamp default now(),
+    updated_at timestamp default now()
+);
+
+-- =====================================================
+-- 8. LISTA DE PRESENTES
+-- =====================================================
+
+create table gifts (
+    id uuid primary key default gen_random_uuid(),
+
+    nome varchar(200) not null,
+    descricao text,
+
+    preco numeric(10,2),
+
+    link_externo text,
+
+    imagem_url text,
+
+    ativo boolean default true,
+    ordem integer default 0,
+
+    created_at timestamp default now()
+);
+
+-- =====================================================
+-- 9. GALERIA FUTURA (PÓS EVENTO)
+-- =====================================================
+
+create table gallery_photos (
+    id uuid primary key default gen_random_uuid(),
+
+    titulo varchar(200),
+    imagem_url text not null,
+
+    publico boolean default true,
+
+    ordem integer default 0,
+
+    created_at timestamp default now()
+);
+
+-- =====================================================
+-- 10. TRIGGER updated_at
+-- =====================================================
+
+create or replace function set_updated_at()
+returns trigger as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_groups_updated
+before update on invitation_groups
+for each row execute function set_updated_at();
+
+create trigger trg_rsvp_updated
+before update on rsvp_responses
+for each row execute function set_updated_at();
+
+create trigger trg_event_updated
+before update on event_settings
+for each row execute function set_updated_at();
+
+-- =====================================================
+-- 11. VIEW DASHBOARD ADMIN
+-- =====================================================
+
+create view vw_dashboard as
+select
+    count(*) as total_grupos,
+
+    count(*) filter (
+        where rsvp_status = 'RESPONDIDO'
+    ) as grupos_respondidos,
+
+    count(*) filter (
+        where rsvp_status = 'PENDENTE'
+    ) as grupos_pendentes
+
+from invitation_groups;
+
+-- =====================================================
+-- 12. VIEW CONTAGEM EVENTO
+-- =====================================================
+
+create view vw_presence_summary as
+select
+    count(*) filter (
+        where status = 'CERIMONIA_E_JANTAR'
+    ) as jantar_confirmados,
+
+    count(*) filter (
+        where status = 'SOMENTE_CERIMONIA'
+    ) as somente_cerimonia,
+
+    count(*) filter (
+        where status = 'AUSENTE'
+    ) as ausentes
+
+from rsvp_member_status;
+
+-- =====================================================
+-- FIM
+-- =====================================================
