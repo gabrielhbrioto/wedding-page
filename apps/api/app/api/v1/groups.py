@@ -57,7 +57,7 @@ def _to_member_response(
     )
 
 
-@router.get(/", response_model=list[GroupResponse])
+@router.get("", response_model=list[GroupResponse])
 def list_groups(db: Session = Depends(get_db)):
     groups = db.scalars(
         select(InvitationGroup).order_by(InvitationGroup.created_at.desc())
