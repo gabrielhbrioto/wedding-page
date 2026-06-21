@@ -55,6 +55,7 @@ def login(
     response: Response,
     db: Session = Depends(get_db),
 ):
+
     normalized_email = payload.email.strip().lower()
 
     admin = db.scalar(

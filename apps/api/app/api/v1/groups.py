@@ -57,7 +57,7 @@ def _to_member_response(
     )
 
 
-@router.get("/", response_model=list[GroupResponse])
+@router.get(/", response_model=list[GroupResponse])
 def list_groups(db: Session = Depends(get_db)):
     groups = db.scalars(
         select(InvitationGroup).order_by(InvitationGroup.created_at.desc())
@@ -65,7 +65,7 @@ def list_groups(db: Session = Depends(get_db)):
     return [_to_group_response(group) for group in groups]
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=GroupResponse)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=GroupResponse)
 def create_group(
     payload: CreateGroupRequest,
     db: Session = Depends(get_db),

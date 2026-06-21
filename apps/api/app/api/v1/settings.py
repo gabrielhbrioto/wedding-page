@@ -45,7 +45,7 @@ def _apply_payload(event: EventSetting, payload: UpdateEventSettingsRequest) -> 
     return event
 
 
-@router.get("/", response_model=EventSettingsResponse)
+@router.get("", response_model=EventSettingsResponse)
 def get_settings(db: Session = Depends(get_db)):
     event = _get_current_event(db)
 
@@ -58,7 +58,7 @@ def get_settings(db: Session = Depends(get_db)):
     return serialize_event_setting(event)
 
 
-@router.post("/", response_model=UpsertEventSettingsResponse)
+@router.post("", response_model=UpsertEventSettingsResponse)
 def create_settings(
     payload: UpdateEventSettingsRequest,
     db: Session = Depends(get_db),
@@ -99,7 +99,7 @@ def create_settings(
     }
 
 
-@router.put("/", response_model=UpsertEventSettingsResponse)
+@router.put("", response_model=UpsertEventSettingsResponse)
 def update_settings(
     payload: UpdateEventSettingsRequest,
     db: Session = Depends(get_db),
@@ -125,7 +125,7 @@ def update_settings(
     }
 
 
-@router.delete("/", response_model=DeleteEventSettingsResponse)
+@router.delete("", response_model=DeleteEventSettingsResponse)
 def delete_settings(db: Session = Depends(get_db)):
     event = _get_current_event(db)
 

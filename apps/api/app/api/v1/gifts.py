@@ -28,7 +28,7 @@ def _to_gift_response(gift: Gift) -> GiftResponse:
     )
 
 
-@router.get("/", response_model=list[GiftResponse])
+@router.get("", response_model=list[GiftResponse])
 def list_gifts(db: Session = Depends(get_db)):
     gifts = db.scalars(
         select(Gift).order_by(Gift.ordem.asc(), Gift.created_at.desc())
@@ -36,7 +36,7 @@ def list_gifts(db: Session = Depends(get_db)):
     return [_to_gift_response(gift) for gift in gifts]
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=GiftResponse)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=GiftResponse)
 def create_gift(
     payload: CreateGiftRequest,
     db: Session = Depends(get_db),

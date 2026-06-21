@@ -10,11 +10,10 @@ SessionLocal = sessionmaker(
     autocommit=False,
 )
 
-
 class Base(DeclarativeBase):
     pass
 
-
+# Verifique se este bloco abaixo existe no seu arquivo!
 def get_db():
     db = SessionLocal()
     try:

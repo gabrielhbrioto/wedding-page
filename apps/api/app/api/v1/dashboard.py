@@ -9,7 +9,7 @@ from app.schemas.dashboard import DashboardResponse
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 
-@router.get("/", response_model=DashboardResponse)
+@router.get("", response_model=DashboardResponse)
 def dashboard(db: Session = Depends(get_db)):
     dashboard_row = db.execute(
         text(

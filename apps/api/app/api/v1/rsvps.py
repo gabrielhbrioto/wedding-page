@@ -25,7 +25,7 @@ from app.utils.rsvp_deadline import ensure_confirmation_window_open
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 
-@router.get("/", response_model=list[AdminRsvpListItemResponse])
+@router.get("", response_model=list[AdminRsvpListItemResponse])
 def list_rsvps(db: Session = Depends(get_db)):
     rows = db.execute(
         select(RsvpResponse, InvitationGroup.nome_grupo)
