@@ -64,6 +64,7 @@ export default async function Home() {
   const address = eventData?.endereco || "São Carlos - SP";
   const mapsUrl = eventData?.google_maps_url || "https://maps.app.goo.gl/zyrhFoF9bE7UcrwXA";
   const giftListUrl = eventData?.gift_list_url || null;
+  const mensagemHome = eventData?.mensagem_home || null;
 
   return (
     <main className="overflow-hidden">
@@ -145,12 +146,18 @@ export default async function Home() {
             Um encontro que virou destino
           </h2>
 
-          <p className="text-lg leading-9 text-zinc-600">
-            Entre encontros inesperados, conversas infinitas
-            e sonhos compartilhados, construímos uma linda
-            história. Agora queremos celebrar esse capítulo
-            ao lado de quem faz parte da nossa vida.
-          </p>
+          {mensagemHome ? (
+            <p className="text-lg leading-9 text-zinc-600">
+              {mensagemHome}
+            </p>
+          ) : (
+            <p className="text-lg leading-9 text-zinc-600">
+              Entre encontros inesperados, conversas infinitas
+              e sonhos compartilhados, construímos uma linda
+              história. Agora queremos celebrar esse capítulo
+              ao lado de quem faz parte da nossa vida.
+            </p>
+          )}
         </div>
       </section>
 
