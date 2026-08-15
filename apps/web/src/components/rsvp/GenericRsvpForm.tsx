@@ -159,6 +159,12 @@ export default function GenericRsvpForm({
                   Lista de presentes
                 </a>
               ) : null}
+              <a
+                className="text-sm font-medium text-emerald-700 underline underline-offset-4"
+                href="/"
+              >
+                Voltar para o início
+              </a>
             </div>
           </div>
         </div>

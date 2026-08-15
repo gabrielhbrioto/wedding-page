@@ -188,19 +188,25 @@ export default function TokenRsvpForm({
 
       {success ? (
         <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700">
-          {success}
-          {showGiftListButton ? (
-            <div className="mt-2">
+          <p>{success}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-4">
+            <a
+              className="text-sm font-medium text-emerald-800 underline underline-offset-4"
+              href="/"
+            >
+              Voltar para o início
+            </a>
+            {showGiftListButton ? (
               <a
-                className="font-medium underline underline-offset-4"
+                className="text-sm font-medium text-emerald-800 underline underline-offset-4"
                 href={giftListUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Lista de presentes
               </a>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
       ) : null}
 
