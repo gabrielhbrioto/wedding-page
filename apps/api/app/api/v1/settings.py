@@ -39,6 +39,12 @@ def _apply_payload(event: EventSetting, payload: UpdateEventSettingsRequest) -> 
         event.gift_list_url = payload.gift_list_url
     if payload.mensagem_home is not None:
         event.mensagem_home = payload.mensagem_home
+    if payload.recepcao_local_nome is not None:
+        event.recepcao_local_nome = payload.recepcao_local_nome
+    if payload.recepcao_endereco is not None:
+        event.recepcao_endereco = payload.recepcao_endereco
+    if payload.recepcao_google_maps_url is not None:
+        event.recepcao_google_maps_url = payload.recepcao_google_maps_url
     if payload.ativo is not None:
         event.ativo = payload.ativo
 
@@ -85,6 +91,9 @@ def create_settings(
         google_maps_url=payload.google_maps_url,
         gift_list_url=payload.gift_list_url,
         mensagem_home=payload.mensagem_home,
+        recepcao_local_nome=payload.recepcao_local_nome,
+        recepcao_endereco=payload.recepcao_endereco,
+        recepcao_google_maps_url=payload.recepcao_google_maps_url,
         ativo=payload.ativo if payload.ativo is not None else True,
         created_by=current_admin.id,
         updated_by=current_admin.id,

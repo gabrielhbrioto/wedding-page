@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import Countdown from "@/components/sections/Countdown";
 
 interface EventData {
@@ -10,6 +11,9 @@ interface EventData {
   google_maps_url: string | null;
   gift_list_url: string | null;
   mensagem_home: string | null;
+  recepcao_local_nome: string | null;
+  recepcao_endereco: string | null;
+  recepcao_google_maps_url: string | null;
   ativo: boolean | null;
 }
 
@@ -28,6 +32,24 @@ async function getEventData(): Promise<EventData | null> {
     return response.json();
   } catch (error) {
     console.warn("Erro ao buscar dados do evento:", error);
+    return null;
+  }
+}
+
+async function getInviteType(token: string): Promise<string | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const response = await fetch(`${apiUrl}/api/v1/public/invite/${token}`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.type;
+  } catch (error) {
     return null;
   }
 }
@@ -53,6 +75,15 @@ function formatDate(isoString: string): { date: string; time: string } {
 
 export default async function Home() {
   const eventData = await getEventData();
+  const cookieStore = await cookies();
+  const token = cookieStore.get("invite_token")?.value;
+  let inviteType = null;
+  
+  if (token) {
+    inviteType = await getInviteType(token);
+  }
+
+  const hasDinner = inviteType && inviteType !== "CERIMONIA";
 
   // Fallback para dados padrão se não conseguir buscar (desenvolvimento)
   const couple = eventData?.nome_casal || "Gabriel & Débora";
@@ -65,6 +96,11 @@ export default async function Home() {
   const mapsUrl = eventData?.google_maps_url || "https://maps.app.goo.gl/zyrhFoF9bE7UcrwXA";
   const giftListUrl = eventData?.gift_list_url || null;
   const mensagemHome = eventData?.mensagem_home || null;
+  
+  const recepcaoNome = eventData?.recepcao_local_nome || null;
+  const recepcaoEndereco = eventData?.recepcao_endereco || null;
+  const recepcaoMapsUrl = eventData?.recepcao_google_maps_url || null;
+  const showReception = Boolean(hasDinner && recepcaoNome && recepcaoEndereco && recepcaoMapsUrl);
 
   return (
     <main className="overflow-hidden">
@@ -166,7 +202,7 @@ export default async function Home() {
         id="evento"
         className="mx-auto max-w-6xl px-6 py-28"
       >
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className={`grid gap-10 md:grid-cols-2 ${showReception ? "lg:grid-cols-3" : ""}`}>
           <div className="rounded-3xl bg-white p-10 shadow-sm">
             <p className="mb-3 text-sm uppercase tracking-[0.35em] text-zinc-500">
               Cerimônia
@@ -186,6 +222,37 @@ export default async function Home() {
               {address}
             </p>
           </div>
+
+          {showReception ? (
+            <div className="rounded-3xl bg-white p-10 shadow-sm">
+              <p className="mb-3 text-sm uppercase tracking-[0.35em] text-zinc-500">
+                Recepção
+              </p>
+
+              <h3 className="mb-6 text-4xl">
+                Jantar
+              </h3>
+
+              <p className="mb-2 text-zinc-700">
+                Logo após a cerimônia
+              </p>
+
+              <p className="mb-8 text-zinc-700">
+                {recepcaoNome}
+                <br />
+                {recepcaoEndereco}
+              </p>
+
+              <a
+                href={recepcaoMapsUrl!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-full border border-zinc-300 px-8 py-4 text-zinc-900 transition hover:bg-zinc-100"
+              >
+                Abrir no mapa
+              </a>
+            </div>
+          ) : null}
 
           <div className="rounded-3xl bg-zinc-900 p-10 text-white">
             <p className="mb-3 text-sm uppercase tracking-[0.35em] text-zinc-400">

@@ -29,6 +29,9 @@ class EventSetting(Base):
     google_maps_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     gift_list_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     mensagem_home: Mapped[str | None] = mapped_column(Text, nullable=True)
+    recepcao_local_nome: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    recepcao_endereco: Mapped[str | None] = mapped_column(Text, nullable=True)
+    recepcao_google_maps_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     ativo: Mapped[bool | None] = mapped_column(
         Boolean,
         nullable=True,

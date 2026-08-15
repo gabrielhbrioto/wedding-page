@@ -31,6 +31,9 @@ class EventSettingsResponse(BaseModel):
     google_maps_url: str | None = None
     gift_list_url: str | None = None
     mensagem_home: str | None = None
+    recepcao_local_nome: str | None = None
+    recepcao_endereco: str | None = None
+    recepcao_google_maps_url: str | None = None
     ativo: bool | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
@@ -45,9 +48,12 @@ class UpdateEventSettingsRequest(BaseModel):
     google_maps_url: str | None = None
     gift_list_url: str | None = None
     mensagem_home: str | None = None
+    recepcao_local_nome: str | None = Field(default=None, max_length=200)
+    recepcao_endereco: str | None = None
+    recepcao_google_maps_url: str | None = None
     ativo: bool | None = None
 
-    @field_validator("google_maps_url", "gift_list_url")
+    @field_validator("google_maps_url", "gift_list_url", "recepcao_google_maps_url")
     @classmethod
     def validate_urls(cls, value: str | None) -> str | None:
         return _validate_http_url(value)
