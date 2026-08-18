@@ -32,6 +32,9 @@ type EventSettingsFormState = {
   local_nome: string;
   endereco: string;
   google_maps_url: string;
+  recepcao_local_nome: string;
+  recepcao_endereco: string;
+  recepcao_google_maps_url: string;
   gift_list_url: string;
   mensagem_home: string;
   ativo: boolean;
@@ -45,6 +48,9 @@ function createInitialFormState(): EventSettingsFormState {
     local_nome: "",
     endereco: "",
     google_maps_url: "",
+    recepcao_local_nome: "",
+    recepcao_endereco: "",
+    recepcao_google_maps_url: "",
     gift_list_url: "",
     mensagem_home: "",
     ativo: true,
@@ -106,6 +112,9 @@ function mapSettingsToForm(settings: AdminEventSettings): EventSettingsFormState
     local_nome: settings.local_nome ?? "",
     endereco: settings.endereco ?? "",
     google_maps_url: settings.google_maps_url ?? "",
+    recepcao_local_nome: settings.recepcao_local_nome ?? "",
+    recepcao_endereco: settings.recepcao_endereco ?? "",
+    recepcao_google_maps_url: settings.recepcao_google_maps_url ?? "",
     gift_list_url: settings.gift_list_url ?? "",
     mensagem_home: settings.mensagem_home ?? "",
     ativo: settings.ativo ?? true,
@@ -120,6 +129,9 @@ function toPayload(form: EventSettingsFormState): AdminEventSettingsUpsertInput 
     local_nome: form.local_nome.trim() || undefined,
     endereco: form.endereco.trim() || undefined,
     google_maps_url: form.google_maps_url.trim() || undefined,
+    recepcao_local_nome: form.recepcao_local_nome.trim() || undefined,
+    recepcao_endereco: form.recepcao_endereco.trim() || undefined,
+    recepcao_google_maps_url: form.recepcao_google_maps_url.trim() || undefined,
     gift_list_url: form.gift_list_url.trim() || null,
     mensagem_home: form.mensagem_home.trim() || undefined,
     ativo: form.ativo,
@@ -431,7 +443,7 @@ export default function EventSettingsForm() {
               />
 
               <TextField
-                label="Nome do local"
+                label="Nome do local da cerimônia"
                 value={form.local_nome}
                 onChange={(event) =>
                   setForm((current) => ({
@@ -443,7 +455,7 @@ export default function EventSettingsForm() {
               />
 
               <TextField
-                label="Endereço"
+                label="Endereço da cerimônia"
                 value={form.endereco}
                 onChange={(event) =>
                   setForm((current) => ({
@@ -455,7 +467,7 @@ export default function EventSettingsForm() {
               />
 
               <TextField
-                label="Google Maps"
+                label="Google Maps da cerimônia"
                 value={form.google_maps_url}
                 onChange={(event) =>
                   setForm((current) => ({
@@ -465,6 +477,53 @@ export default function EventSettingsForm() {
                 }
                 fullWidth
               />
+
+              <Box sx={{ gridColumn: { xs: "auto", md: "1 / -1" } }}>
+                <Divider sx={{ my: 1 }} />
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  Dados da Recepção / Jantar (Opcional)
+                </Typography>
+              </Box>
+
+              <TextField
+                label="Nome do local da recepção"
+                value={form.recepcao_local_nome}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    recepcao_local_nome: event.target.value,
+                  }))
+                }
+                fullWidth
+              />
+
+              <TextField
+                label="Endereço da recepção"
+                value={form.recepcao_endereco}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    recepcao_endereco: event.target.value,
+                  }))
+                }
+                fullWidth
+              />
+
+              <TextField
+                label="Google Maps da recepção"
+                value={form.recepcao_google_maps_url}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    recepcao_google_maps_url: event.target.value,
+                  }))
+                }
+                fullWidth
+              />
+
+              <Box sx={{ gridColumn: { xs: "auto", md: "1 / -1" } }}>
+                <Divider sx={{ my: 1 }} />
+              </Box>
 
               <TextField
                 label="Link da lista de presentes"

@@ -1,0 +1,13 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - '-t'
+      - 'us-central1-docker.pkg.dev/wedding-page-497622/wedding-api/wedding-invite-api:latest'
+      - 'apps/api'
+
+images:
+  - 'us-central1-docker.pkg.dev/wedding-page-497622/wedding-api/wedding-invite-api:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

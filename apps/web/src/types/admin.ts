@@ -73,6 +73,9 @@ export type AdminEventSettings = {
   google_maps_url?: string | null;
   gift_list_url?: string | null;
   mensagem_home?: string | null;
+  recepcao_local_nome?: string | null;
+  recepcao_endereco?: string | null;
+  recepcao_google_maps_url?: string | null;
   ativo?: boolean | null;
   created_at?: string | null;
   updated_at?: string | null;
@@ -87,6 +90,9 @@ export type AdminEventSettingsUpsertInput = {
   google_maps_url?: string;
   gift_list_url?: string | null;
   mensagem_home?: string;
+  recepcao_local_nome?: string;
+  recepcao_endereco?: string;
+  recepcao_google_maps_url?: string;
   ativo?: boolean;
 };
 

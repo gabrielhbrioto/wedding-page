@@ -1,48 +1,36 @@
 #!/usr/bin/env sh
 set -e
 
-echo "Starting entrypoint: wait for DB and run migrations if available"
+echo "Starting entrypoint: checking DB connectivity (max 15s)"
 
 if [ -n "${DATABASE_URL}" ]; then
-  echo "DATABASE_URL is set, waiting for DB to accept connections..."
-  COUNTER=0
-  until python - <<PY
+  python - <<PY
 import os, time
 
 try:
     import psycopg
 except Exception:
-    print('psycopg not available, skipping DB wait')
+    print('psycopg not available, skipping DB check')
     raise SystemExit(0)
 
 url = os.getenv('DATABASE_URL')
 if not url:
     raise SystemExit(0)
 
-# NOVIDADE: Remove o prefixo +psycopg APENAS para o teste de conexão funcionar
 test_url = url.replace("postgresql+psycopg://", "postgresql://", 1)
 
-for i in range(60):
+for i in range(3):
     try:
-        conn = psycopg.connect(
-            test_url,
-            connect_timeout=10
-        )
+        conn = psycopg.connect(test_url, connect_timeout=5)
         conn.close()
         print('DB reachable')
         raise SystemExit(0)
     except Exception as e:
-        print('DB ERROR:', repr(e))
+        print('DB check attempt', i+1, 'failed:', repr(e))
         time.sleep(1)
-raise SystemExit(1)
+
+print('DB not reachable after 3 attempts — proceeding anyway (app will retry)')
 PY
-  do
-    COUNTER=$((COUNTER+1))
-    if [ "$COUNTER" -gt 60 ]; then
-      echo "DB did not become available after 60s"
-      exit 1
-    fi
-  done
 fi
 
 # Run migrations if alembic is available
