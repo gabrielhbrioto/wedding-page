@@ -83,7 +83,7 @@ export default function Countdown({ dataEvento }: CountdownProps) {
             <div className="relative h-16 overflow-hidden flex items-center justify-center text-5xl font-light">
               00
             </div>
-            <p className="mt-3 text-sm uppercase tracking-widest text-zinc-500 text-center">
+            <p className="mt-3 text-sm uppercase tracking-widest text-[#D4A373] text-center">
               &nbsp;
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function Countdown({ dataEvento }: CountdownProps) {
         >
           <AnimatedNumber value={value as number} />
 
-          <p className="mt-3 text-sm uppercase tracking-widest text-zinc-500 text-center">
+          <p className="mt-3 text-sm uppercase tracking-widest text-[#D4A373] text-center">
             {label}
           </p>
         </div>
