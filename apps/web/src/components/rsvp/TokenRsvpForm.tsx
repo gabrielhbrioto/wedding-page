@@ -151,12 +151,12 @@ export default function TokenRsvpForm({
   return (
     <form className="mx-auto max-w-3xl rounded-2xl bg-white p-8 shadow" onSubmit={(event) => void handleSubmit(event)}>
       <div className="mb-8">
-        <p className="mb-3 text-sm uppercase tracking-[0.35em] text-[#D4A373]">
+        <p className="mb-3 text-sm uppercase tracking-[0.35em] text-[#006A89]">
           Confirmação de presença
         </p>
         <h1 className="text-3xl font-serif">{group.nome_grupo}</h1>
         {group.observacoes ? (
-          <p className="mt-3 text-[#6E6862]">{group.observacoes}</p>
+          <p className="mt-3 text-[#06264D]/80">{group.observacoes}</p>
         ) : null}
       </div>
 
@@ -237,13 +237,13 @@ export default function TokenRsvpForm({
             <div key={member.id} className="rounded-xl border p-4">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="font-semibold text-[#4A443E]">{member.nome}</p>
-                  <p className="text-sm text-[#D4A373]">
+                  <p className="font-semibold text-[#06264D]">{member.nome}</p>
+                  <p className="text-sm text-[#006A89]">
                     Escolha como essa pessoa irá participar.
                   </p>
                 </div>
 
-                <label className="flex flex-col gap-2 text-sm font-medium text-[#6E6862]">
+                <label className="flex flex-col gap-2 text-sm font-medium text-[#06264D]/80">
                   <span>Presença</span>
                   <select
                     className="min-w-[220px] rounded-xl border border-zinc-300 bg-white px-3 py-2"
@@ -282,7 +282,7 @@ export default function TokenRsvpForm({
       </div>
 
       <button
-        className="mt-8 w-full rounded-xl bg-[#D4A373] hover:bg-[#c29262] transition shadow p-3 text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-8 w-full rounded-xl bg-[#006A89] hover:bg-[#004F69] transition shadow p-3 text-white disabled:cursor-not-allowed disabled:opacity-60"
         type="submit"
         disabled={controlsDisabled}
       >

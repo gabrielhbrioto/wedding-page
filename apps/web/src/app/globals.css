@@ -5,16 +5,16 @@
   --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
   --font-script: var(--font-great-vibes), cursive;
 
-  --color-wedding-bg: #FCFAF8;
+  --color-wedding-bg: #F8F9FA;
   --color-wedding-text: #4A443E;
   --color-wedding-accent: #D4A373; /* soft gold/taupe */
   --color-wedding-secondary: #E9E1D9;
   --color-wedding-blush: #F4EAE6;
-  --color-wedding-green: #8A9A86;
+  --color-wedding-blue: #3B82F6;
 }
 
 :root {
-  --background: #FCFAF8;
+  --background: #F8F9FA;
   --foreground: #4A443E;
   --gold: #D4A373;
 }

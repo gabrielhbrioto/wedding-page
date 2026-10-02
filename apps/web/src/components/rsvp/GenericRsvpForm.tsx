@@ -102,7 +102,7 @@ export default function GenericRsvpForm({
     <form className="mx-auto max-w-xl rounded-2xl bg-white p-8 shadow" onSubmit={(event) => void handleSubmit(event)}>
       <h1 className="mb-4 text-3xl font-serif">Confirmação de Presença</h1>
 
-      <p className="mb-5 text-[#6E6862]">
+      <p className="mb-5 text-[#06264D]/80">
         Preencha os nomes e envie a sua confirmação.
       </p>
 
@@ -138,8 +138,8 @@ export default function GenericRsvpForm({
             </p>
           ) : null}
 
-          <div className="mt-4 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-[#4A443E]">
-            <p className="text-xs uppercase tracking-[0.3em] text-[#D4A373]">Token do convite</p>
+          <div className="mt-4 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-[#06264D]">
+            <p className="text-xs uppercase tracking-[0.3em] text-[#006A89]">Token do convite</p>
             <p className="mt-2 break-all font-mono text-sm">{success.token}</p>
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <CopyInviteLinkButton token={success.token} />
@@ -210,7 +210,7 @@ export default function GenericRsvpForm({
       </div>
 
       <button
-        className="mt-8 w-full rounded-xl bg-[#D4A373] hover:bg-[#c29262] transition shadow p-3 text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-8 w-full rounded-xl bg-[#006A89] hover:bg-[#004F69] transition shadow p-3 text-white disabled:cursor-not-allowed disabled:opacity-60"
         type="submit"
         disabled={controlsDisabled}
       >

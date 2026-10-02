@@ -47,7 +47,7 @@ function AnimatedNumber({
             duration: 0.45,
             ease: "easeInOut",
           }}
-          className="absolute inset-0 flex items-center justify-center text-5xl font-light"
+          className="absolute inset-0 flex items-center justify-center text-6xl font-light text-[#06264D]"
         >
           {String(value).padStart(2, "0")}
         </motion.div>
@@ -80,10 +80,10 @@ export default function Countdown({ dataEvento }: CountdownProps) {
             key={i}
             className="rounded-3xl border border-white bg-white/70 p-8 shadow-sm backdrop-blur"
           >
-            <div className="relative h-16 overflow-hidden flex items-center justify-center text-5xl font-light">
+            <div className="relative h-16 overflow-hidden flex items-center justify-center text-6xl font-light text-[#06264D]">
               00
             </div>
-            <p className="mt-3 text-sm uppercase tracking-widest text-[#D4A373] text-center">
+            <p className="mt-3 text-sm uppercase tracking-widest text-[#006A89] font-bold text-center">
               &nbsp;
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function Countdown({ dataEvento }: CountdownProps) {
         >
           <AnimatedNumber value={value as number} />
 
-          <p className="mt-3 text-sm uppercase tracking-widest text-[#D4A373] text-center">
+          <p className="mt-3 text-sm uppercase tracking-widest text-[#006A89] font-bold text-center">
             {label}
           </p>
         </div>
