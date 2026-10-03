@@ -115,17 +115,17 @@ export default async function Home() {
         <div className="absolute -top-20 left-10 h-96 w-96 rounded-full bg-[#003A6C] blur-[100px] opacity-10" />
         <div className="absolute bottom-10 right-10 h-96 w-96 rounded-full bg-[#006A89] blur-[100px] opacity-10" />
 
-        <div className="relative z-10 max-w-4xl mx-auto px-8 py-20 bg-white/70 backdrop-blur-sm border border-[#003A6C]/10 shadow-2xl shadow-[#003A6C]/5 rounded-3xl">
+        <div className="relative z-10 max-w-4xl mx-auto px-5 py-12 sm:px-8 sm:py-20 bg-white/70 backdrop-blur-sm border border-[#003A6C]/10 shadow-2xl shadow-[#003A6C]/5 rounded-3xl">
           <p className="mb-4 text-sm uppercase tracking-[0.5em] text-[#003A6C] font-semibold">
             {formattedDate} • {address.split(/,\s*/)[0]}
           </p>
 
-          <h1 className="mb-4 text-6xl leading-tight md:text-8xl text-[#06264D]">
-            {couple.split(" & ")[0]} <span className="font-script text-[#006A89] mx-2 text-7xl md:text-9xl font-normal">&</span>{" "}
+          <h1 className="mb-4 text-5xl sm:text-6xl leading-tight md:text-8xl text-[#06264D]">
+            {couple.split(" & ")[0]} <span className="font-script text-[#006A89] mx-2 text-6xl sm:text-7xl md:text-9xl font-normal">&</span>{" "}
             {couple.split(" & ")[1] || ""}
           </h1>
 
-          <p className="font-script text-4xl md:text-6xl text-[#003A6C] mb-12">
+          <p className="font-script text-3xl sm:text-4xl md:text-6xl text-[#003A6C] mb-12">
             Vamos casar!
           </p>
 
@@ -159,7 +159,7 @@ export default async function Home() {
       </section>
 
       {/* CONTAGEM */}
-      <section className="mx-auto max-w-6xl px-6 py-24 text-center">
+      <section className="mx-auto max-w-6xl px-6 py-16 sm:py-24 text-center">
         <p className="mb-3 text-sm uppercase tracking-[0.4em] text-[#003A6C] font-semibold">
           Falta pouco
         </p>
@@ -170,33 +170,33 @@ export default async function Home() {
       </section>
 
       {/* BEM-VINDOS */}
-      <section className="bg-white py-28 relative border-y border-[#003A6C]/10">
+      <section className="bg-white py-16 sm:py-28 relative border-y border-[#003A6C]/10">
         <div className="mx-auto max-w-4xl px-6 text-center relative z-10">
           <p className="mb-4 text-sm uppercase tracking-[0.4em] text-[#006A89] font-semibold">
             Bem-vindos ao nosso casamento!
           </p>
 
-          <h2 className="mb-12 text-5xl md:text-6xl text-[#003A6C]">
+          <h2 className="mb-12 text-4xl sm:text-5xl md:text-6xl text-[#003A6C]">
             Sim, é verdade! A gente vai se casar!!!
           </h2>
 
           {mensagemHome ? (
-            <p className="text-lg md:text-xl leading-relaxed text-[#06264D] whitespace-pre-line font-light">
+            <p className="text-base sm:text-lg md:text-xl leading-relaxed text-[#06264D] whitespace-pre-line font-light">
               {mensagemHome}
             </p>
           ) : (
-            <div className="text-lg md:text-xl leading-relaxed text-[#06264D] space-y-6 font-light">
+            <div className="text-base sm:text-lg md:text-xl leading-relaxed text-[#06264D] space-y-6 font-light">
               <p>
-                Estamos muito felizes! Estamos nas nuvens e queremos compartilhar com você todo o nosso amor. Por isso estamos preparando um casamento que fará história e no qual você vai se divertir muito.
+                É com muita alegria que compartilhamos uma notícia muito especial: <b>vamos nos casar!</b> Estamos vivendo uma fase cheia de planos, expectativas e, principalmente, muita felicidade. E queremos celebrar esse momento ao lado das pessoas que fazem parte da nossa história — <b>você é uma delas!</b>
               </p>
               <p>
-                Enquanto não chega o grande dia criamos um site com um montão de sessões para que todos estejam ao dia de tudo e para compartilhar a nossa história de amor.
+                Enquanto não chega o grande dia criamos um site para compartilhar um pouquinho desse momento com você. Por aqui, você poderá conhecer todos os detalhes do casamento, conferir algumas fotos nossas, acompanhar a contagem regressiva e encontrar as informações sobre a cerimônia e o local.
               </p>
               <p>
-                Uma coisa importante, na sessão presença, poderá confirmar se você vai ou não ao casamento. Confirme o mais rápido possível por favor, que assim, organizar tudo será muito mais fácil.
+                E, claro, <b>queremos muito saber se poderemos contar com a sua presença nesse dia tão especial para nós.</b> Por isso pedimos, por favor, que faça sua confirmação o quanto antes. Isso vai nos ajudar bastante na organização de todos os detalhes para que possamos preparar tudo com muito carinho para receber vocês.
               </p>
               <p className="font-script text-5xl text-[#006A89] pt-8">
-                Aproveite da web e a gente se encontra em breve, muitos beijos!
+                Esperamos vê-los em breve!
               </p>
             </div>
           )}
@@ -204,51 +204,45 @@ export default async function Home() {
       </section>
 
       {/* GALERIA */}
-      <section className="bg-[#F8F9FA] py-28">
+      <section className="bg-[#F8F9FA] py-16 sm:py-28">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <p className="mb-4 text-sm uppercase tracking-[0.4em] text-[#006A89] font-semibold">
             Nossos Momentos
           </p>
 
-          <h2 className="mb-16 text-5xl md:text-6xl text-[#06264D]">
+          <h2 className="mb-16 text-4xl sm:text-5xl md:text-6xl text-[#06264D]">
             Galeria de Fotos
           </h2>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl shadow-xl border-4 border-white group">
-              <div className="absolute inset-0 bg-[#003A6C]/5 flex flex-col items-center justify-center text-[#003A6C] p-6 text-center transition group-hover:scale-105 duration-500">
-                <span className="text-sm font-medium mb-2 uppercase tracking-widest">Foto 1</span>
-                <span className="text-xs">Coloque "/fotos/1.jpg" em public</span>
+          {/* Carrossel Horizontal com Snap (Scroll nativo) */}
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 px-6 -mx-6 scrollbar-hide">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <div key={num} className="snap-center shrink-0 w-[75vw] sm:w-[350px] relative aspect-[4/5] overflow-hidden rounded-xl shadow-xl border-4 border-white group">
+                <Image src={`/fotos/${num}.jpg`} alt={`Foto casal ${num}`} fill sizes="(max-width: 640px) 75vw, 350px" className="object-cover transition duration-700 group-hover:scale-105" />
               </div>
-            </div>
-
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl shadow-xl border-4 border-white group">
-              <div className="absolute inset-0 bg-[#003A6C]/5 flex flex-col items-center justify-center text-[#003A6C] p-6 text-center transition group-hover:scale-105 duration-500">
-                <span className="text-sm font-medium mb-2 uppercase tracking-widest">Foto 2</span>
-                <span className="text-xs">Coloque "/fotos/2.jpg" em public</span>
-              </div>
-            </div>
-
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl shadow-xl border-4 border-white group sm:col-span-2 md:col-span-1">
-              <div className="absolute inset-0 bg-[#003A6C]/5 flex flex-col items-center justify-center text-[#003A6C] p-6 text-center transition group-hover:scale-105 duration-500">
-                <span className="text-sm font-medium mb-2 uppercase tracking-widest">Foto 3</span>
-                <span className="text-xs">Coloque "/fotos/3.jpg" em public</span>
-              </div>
-            </div>
+            ))}
+            
+            {/* Espaço extra no final para o último card não colar na margem */}
+            <div className="shrink-0 w-[1vw] sm:w-[10px]" />
           </div>
+          
+          <p className="mt-4 text-xs text-[#06264D]/60 flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8l4 4-4 4"/><path d="M3 12h18"/><path d="M7 8l-4 4 4 4"/></svg>
+            Deslize para ver mais
+          </p>
         </div>
       </section>
 
       {/* EVENTO */}
       <section
         id="evento"
-        className="bg-white py-32 border-t border-[#1F578D]/10"
+        className="bg-white py-20 sm:py-32 border-t border-[#1F578D]/10"
       >
         <div className="mx-auto max-w-6xl px-6">
           <div className={`grid gap-10 md:grid-cols-2 ${showReception ? "lg:grid-cols-3" : ""}`}>
             
             {/* Cerimonia Card */}
-            <div className="rounded-[2rem] bg-[#1F578D] p-12 shadow-xl text-center relative overflow-hidden text-white">
+            <div className="rounded-[2rem] bg-[#1F578D] p-6 sm:p-8 md:p-12 shadow-xl text-center relative overflow-hidden text-white">
               <div className="absolute top-0 left-0 w-full h-2 bg-[#006A89]"></div>
               <p className="mb-4 text-sm uppercase tracking-[0.4em] text-white/70 font-medium">
                 Cerimônia
@@ -268,7 +262,7 @@ export default async function Home() {
 
             {/* Recepção Card */}
             {showReception ? (
-              <div className="rounded-[2rem] bg-[#1F578D] p-12 shadow-xl text-center relative overflow-hidden text-white">
+              <div className="rounded-[2rem] bg-[#1F578D] p-6 sm:p-8 md:p-12 shadow-xl text-center relative overflow-hidden text-white">
                 <div className="absolute top-0 left-0 w-full h-2 bg-[#006A89]"></div>
                 <p className="mb-4 text-sm uppercase tracking-[0.4em] text-white/70 font-medium">
                   Recepção
@@ -296,7 +290,7 @@ export default async function Home() {
             ) : null}
 
             {/* Localização Card */}
-            <div className="rounded-[2rem] bg-[#1F578D] p-12 text-white text-center shadow-xl relative overflow-hidden">
+            <div className="rounded-[2rem] bg-[#1F578D] p-6 sm:p-8 md:p-12 text-white text-center shadow-xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-[#006A89]"></div>
               <div className="relative z-10">
                 <p className="mb-4 text-sm uppercase tracking-[0.4em] text-white/70 font-medium">
@@ -323,14 +317,14 @@ export default async function Home() {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#003A6C] px-6 py-32 text-center text-white relative overflow-hidden">
+      <section className="bg-[#003A6C] px-6 py-20 sm:py-32 text-center text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20" />
         <div className="relative z-10 max-w-2xl mx-auto">
           <p className="mb-4 text-sm uppercase tracking-[0.5em] text-white/80 font-bold">
             Confirmação
           </p>
 
-          <h2 className="mb-8 text-5xl md:text-7xl font-serif">
+          <h2 className="mb-8 text-4xl sm:text-5xl md:text-7xl font-serif">
             Esperamos por você
           </h2>
 

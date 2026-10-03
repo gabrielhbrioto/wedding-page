@@ -7,13 +7,46 @@ interface CountdownProps {
   dataEvento: string;
 }
 
+function parseDateRobust(dateStr: string) {
+  if (!dateStr) return new Date();
+
+  // 1. Full ISO Match: YYYY-MM-DDTHH:MM:SS
+  const regexIso = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
+  const matchIso = dateStr.match(regexIso);
+  if (matchIso) {
+    return new Date(parseInt(matchIso[1], 10), parseInt(matchIso[2], 10) - 1, parseInt(matchIso[3], 10), parseInt(matchIso[4], 10), parseInt(matchIso[5], 10), parseInt(matchIso[6], 10));
+  }
+
+  // 2. BR Format Match: DD/MM/YYYY ou DD-MM-YYYY
+  const regexBr = /^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/;
+  const matchBr = dateStr.match(regexBr);
+  if (matchBr) {
+    return new Date(parseInt(matchBr[3], 10), parseInt(matchBr[2], 10) - 1, parseInt(matchBr[1], 10), 16, 0, 0);
+  }
+  
+  // 3. YYYY-MM-DD Match (sem horario)
+  const regexYmd = /^(\d{4})-(\d{2})-(\d{2})/;
+  const matchYmd = dateStr.match(regexYmd);
+  if (matchYmd) {
+    return new Date(parseInt(matchYmd[1], 10), parseInt(matchYmd[2], 10) - 1, parseInt(matchYmd[3], 10), 16, 0, 0);
+  }
+
+  // Fallbacks
+  let d = new Date(dateStr);
+  if (!isNaN(d.getTime())) return d;
+  
+  let cleanStr = dateStr.split('.')[0].replace(/-/g, '/').replace('T', ' ');
+  cleanStr = cleanStr.replace(/\+\d{2}:\d{2}/, '').replace(/-\d{2}:\d{2}/, '');
+  return new Date(cleanStr);
+}
+
 function getTimeLeft(dataEvento: string) {
-  const targetDate = new Date(dataEvento);
+  const targetDate = parseDateRobust(dataEvento);
   const now = new Date();
 
   const diff = targetDate.getTime() - now.getTime();
 
-  if (diff <= 0) {
+  if (isNaN(diff) || diff <= 0) {
     return {
       dias: 0,
       horas: 0,
@@ -47,7 +80,7 @@ function AnimatedNumber({
             duration: 0.45,
             ease: "easeInOut",
           }}
-          className="absolute inset-0 flex items-center justify-center text-6xl font-light text-[#06264D]"
+          className="absolute inset-0 flex items-center justify-center text-4xl sm:text-6xl font-light text-[#06264D]"
         >
           {String(value).padStart(2, "0")}
         </motion.div>
@@ -78,9 +111,9 @@ export default function Countdown({ dataEvento }: CountdownProps) {
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="rounded-3xl border border-white bg-white/70 p-8 shadow-sm backdrop-blur"
+            className="rounded-3xl border border-white bg-white/70 p-4 sm:p-8 shadow-sm backdrop-blur"
           >
-            <div className="relative h-16 overflow-hidden flex items-center justify-center text-6xl font-light text-[#06264D]">
+            <div className="relative h-16 overflow-hidden flex items-center justify-center text-4xl sm:text-6xl font-light text-[#06264D]">
               00
             </div>
             <p className="mt-3 text-sm uppercase tracking-widest text-[#006A89] font-bold text-center">
@@ -104,7 +137,7 @@ export default function Countdown({ dataEvento }: CountdownProps) {
       {items.map(([label, value]) => (
         <div
           key={label}
-          className="rounded-3xl border border-white bg-white/70 p-8 shadow-sm backdrop-blur"
+          className="rounded-3xl border border-white bg-white/70 p-4 sm:p-8 shadow-sm backdrop-blur"
         >
           <AnimatedNumber value={value as number} />
 

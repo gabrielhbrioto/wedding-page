@@ -149,12 +149,12 @@ export default function TokenRsvpForm({
   }
 
   return (
-    <form className="mx-auto max-w-3xl rounded-2xl bg-white p-8 shadow" onSubmit={(event) => void handleSubmit(event)}>
+    <form className="mx-auto max-w-3xl rounded-2xl bg-white p-5 sm:p-8 shadow" onSubmit={(event) => void handleSubmit(event)}>
       <div className="mb-8">
         <p className="mb-3 text-sm uppercase tracking-[0.35em] text-[#006A89]">
           Confirmação de presença
         </p>
-        <h1 className="text-3xl font-serif">{group.nome_grupo}</h1>
+        <h1 className="text-2xl sm:text-3xl font-serif">{group.nome_grupo}</h1>
         {group.observacoes ? (
           <p className="mt-3 text-[#06264D]/80">{group.observacoes}</p>
         ) : null}
@@ -246,7 +246,7 @@ export default function TokenRsvpForm({
                 <label className="flex flex-col gap-2 text-sm font-medium text-[#06264D]/80">
                   <span>Presença</span>
                   <select
-                    className="min-w-[220px] rounded-xl border border-zinc-300 bg-white px-3 py-2"
+                    className="w-full md:min-w-[220px] md:w-auto rounded-xl border border-zinc-300 bg-white px-3 py-2"
                     value={currentValue}
                     disabled={controlsDisabled}
                     onChange={(event) =>

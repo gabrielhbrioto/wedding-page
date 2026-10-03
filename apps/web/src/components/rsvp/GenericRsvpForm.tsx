@@ -99,8 +99,8 @@ export default function GenericRsvpForm({
     : deadlineLabel;
 
   return (
-    <form className="mx-auto max-w-xl rounded-2xl bg-white p-8 shadow" onSubmit={(event) => void handleSubmit(event)}>
-      <h1 className="mb-4 text-3xl font-serif">Confirmação de Presença</h1>
+    <form className="mx-auto max-w-xl rounded-2xl bg-white p-5 sm:p-8 shadow" onSubmit={(event) => void handleSubmit(event)}>
+      <h1 className="mb-4 text-2xl sm:text-3xl font-serif">Confirmação de Presença</h1>
 
       <p className="mb-5 text-[#06264D]/80">
         Preencha os nomes e envie a sua confirmação.
