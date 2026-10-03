@@ -179,12 +179,6 @@ export default async function Home() {
           <h2 className="mb-12 text-4xl sm:text-5xl md:text-6xl text-[#003A6C]">
             Sim, é verdade! A gente vai se casar!!!
           </h2>
-
-          {mensagemHome ? (
-            <p className="text-base sm:text-lg md:text-xl leading-relaxed text-[#06264D] whitespace-pre-line font-light">
-              {mensagemHome}
-            </p>
-          ) : (
             <div className="text-base sm:text-lg md:text-xl leading-relaxed text-[#06264D] space-y-6 font-light">
               <p>
                 É com muita alegria que compartilhamos uma notícia muito especial: <b>vamos nos casar!</b> Estamos vivendo uma fase cheia de planos, expectativas e, principalmente, muita felicidade. E queremos celebrar esse momento ao lado das pessoas que fazem parte da nossa história — <b>você é uma delas!</b>
@@ -199,7 +193,6 @@ export default async function Home() {
                 Esperamos vê-los em breve!
               </p>
             </div>
-          )}
         </div>
       </section>
 
