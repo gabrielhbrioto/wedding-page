@@ -51,7 +51,8 @@ class UpdateGroupRequest(BaseModel):
 class CreateGroupMemberRequest(BaseModel):
     nome: str = Field(min_length=1, max_length=150)
     pre_cadastrado: bool = True
-    ordem_exibicao: int = 0
+    # Quando omitido, o convidado e posicionado no fim da lista do grupo.
+    ordem_exibicao: int | None = None
 
 
 class CreateGroupMemberResponse(BaseModel):

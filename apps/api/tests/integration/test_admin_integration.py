@@ -670,6 +670,9 @@ def test_confirmation_deadline_blocks_rsvp_and_new_invites(admin_fixture, admin_
     )
     assert create_member_response.status_code == 410, create_member_response.text
 
+    delete_member_response = admin_client.delete(f"/api/v1/admin/members/{member_id}")
+    assert delete_member_response.status_code == 410, delete_member_response.text
+
     reset_response = admin_client.delete(f"/api/v1/admin/rsvps/{rsvp_id}")
     assert reset_response.status_code == 410, reset_response.text
 
@@ -747,5 +750,79 @@ def test_public_rsvp_submission_persists_response(admin_fixture, admin_client):
             MemberStatus.CERIMONIA_E_JANTAR,
             MemberStatus.AUSENTE,
         }
+    finally:
+        db.close()
+
+
+def test_add_and_remove_members_keeps_token_and_recalculates_total(admin_fixture, admin_client):
+    unique = admin_fixture["email"].split("@")[0].split(".")[-1]
+    token = f"wave7-{unique}-members"
+
+    create_group_response = admin_client.post(
+        "/api/v1/admin/groups",
+        json={"token": token, "nome_grupo": f"Wave7 Members Group {unique}"},
+    )
+    assert create_group_response.status_code == 201, create_group_response.text
+    group_id = create_group_response.json()["id"]
+
+    member_ids: list[str] = []
+    for name in ("Primeiro", "Segundo"):
+        response = admin_client.post(
+            f"/api/v1/admin/groups/{group_id}/members",
+            json={"nome": f"  {name} {unique}  "},
+        )
+        assert response.status_code == 201, response.text
+        member_ids.append(response.json()["member"]["id"])
+
+    public_client = TestClient(app)
+    confirm_response = public_client.post(
+        f"/api/v1/public/rsvp/{token}",
+        json={
+            "members": [
+                {"member_id": member_ids[0], "status": "CERIMONIA_E_JANTAR"},
+                {"member_id": member_ids[1], "status": "SOMENTE_CERIMONIA"},
+            ],
+        },
+    )
+    assert confirm_response.status_code == 200, confirm_response.text
+    assert confirm_response.json()["total_confirmados"] == 2
+
+    added_response = admin_client.post(
+        f"/api/v1/admin/groups/{group_id}/members",
+        json={"nome": f"Terceiro {unique}"},
+    )
+    assert added_response.status_code == 201, added_response.text
+    added_member = added_response.json()["member"]
+    assert added_member["nome"] == f"Terceiro {unique}"
+    assert added_member["ordem_exibicao"] == 2
+
+    delete_response = admin_client.delete(f"/api/v1/admin/members/{member_ids[1]}")
+    assert delete_response.status_code == 200, delete_response.text
+
+    invite_response = public_client.get(f"/api/v1/public/invite/{token}")
+    assert invite_response.status_code == 200, invite_response.text
+    invite = invite_response.json()
+    assert invite["token"] == token
+    assert [member["id"] for member in invite["members"]] == [
+        member_ids[0],
+        added_member["id"],
+    ]
+
+    detail_response = admin_client.get(f"/api/v1/admin/groups/{group_id}")
+    assert detail_response.status_code == 200, detail_response.text
+    assert detail_response.json()["token"] == token
+    statuses = {member["id"]: member["status"] for member in detail_response.json()["members"]}
+    assert statuses == {
+        member_ids[0]: MemberStatus.CERIMONIA_E_JANTAR.value,
+        added_member["id"]: None,
+    }
+
+    db = SessionLocal()
+    try:
+        response = db.scalar(
+            select(RsvpResponse).where(RsvpResponse.group_id == uuid.UUID(group_id))
+        )
+        assert response is not None
+        assert response.total_confirmados == 1
     finally:
         db.close()

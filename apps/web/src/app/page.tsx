@@ -161,7 +161,7 @@ export default async function Home() {
       {/* CONTAGEM */}
       <section className="mx-auto max-w-6xl px-6 py-16 sm:py-24 text-center">
         <p className="mb-3 text-sm uppercase tracking-[0.4em] text-[#003A6C] font-semibold">
-          Falta pouco
+          Falta pouco para o grande dia!
         </p>
         <h2 className="mb-12 text-4xl md:text-5xl text-[#06264D]">
           Contagem Regressiva
@@ -175,10 +175,6 @@ export default async function Home() {
           <p className="mb-4 text-sm uppercase tracking-[0.4em] text-[#006A89] font-semibold">
             Bem-vindos ao nosso casamento!
           </p>
-
-          <h2 className="mb-12 text-4xl sm:text-5xl md:text-6xl text-[#003A6C]">
-            Sim, é verdade! A gente vai se casar!!!
-          </h2>
             <div className="text-base sm:text-lg md:text-xl leading-relaxed text-[#06264D] space-y-6 font-light">
               <p>
                 É com muita alegria que compartilhamos uma notícia muito especial: <b>vamos nos casar!</b> Estamos vivendo uma fase cheia de planos, expectativas e, principalmente, muita felicidade. E queremos celebrar esse momento ao lado das pessoas que fazem parte da nossa história — <b>você é uma delas!</b>

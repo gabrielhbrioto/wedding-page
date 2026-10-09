@@ -21,7 +21,9 @@ import { GroupsTable } from "@/components/ui/GroupsTable";
 import { apiFetch } from "@/lib/api";
 import type {
   AdminCreateGroupInput,
+  AdminCreateMemberInput,
   AdminGroupDetails,
+  AdminGroupMembersChanges,
   AdminGroupSummary,
   AdminUpdateGroupInput,
 } from "@/types/admin";
@@ -81,6 +83,11 @@ function getErrorMessage(error: unknown, fallbackMessage: string) {
   return error instanceof Error ? error.message : fallbackMessage;
 }
 
+// Fora do componente para ter identidade estável (usada em efeitos do diálogo e da tabela).
+async function loadGroupDetails(groupId: string) {
+  return (await apiFetch(`/admin/groups/${groupId}`)) as AdminGroupDetails;
+}
+
 export default function ConvidadosPage() {
   const [groups, setGroups] = useState<AdminGroupSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,6 +96,7 @@ export default function ConvidadosPage() {
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState<CreateGroupFormState>(() => createInitialFormState());
   const [editingGroup, setEditingGroup] = useState<AdminGroupSummary | null>(null);
+  const [detailsRefreshKey, setDetailsRefreshKey] = useState(0);
 
   async function loadGroups(showLoading = false) {
     if (showLoading) {
@@ -108,10 +116,6 @@ export default function ConvidadosPage() {
         setLoading(false);
       }
     }
-  }
-
-  async function loadGroupDetails(groupId: string) {
-    return (await apiFetch(`/admin/groups/${groupId}`)) as AdminGroupDetails;
   }
 
   function updateGuestName(guestId: string, nome: string) {
@@ -221,17 +225,41 @@ export default function ConvidadosPage() {
     setEditingGroup(group);
   }
 
-  async function handleSaveGroup(values: AdminUpdateGroupInput) {
+  async function handleSaveGroup(
+    values: AdminUpdateGroupInput,
+    members: AdminGroupMembersChanges
+  ) {
     if (!editingGroup) {
       return;
     }
 
-    await apiFetch(`/admin/groups/${editingGroup.id}`, {
-      method: "PUT",
-      body: JSON.stringify(values),
-    });
+    const groupId = editingGroup.id;
 
-    await loadGroups();
+    try {
+      // Os convidados ficam ligados ao grupo por group_id, então nenhuma destas
+      // operações altera o token (e portanto o link) do convite.
+      for (const memberId of members.removedIds) {
+        await apiFetch(`/admin/members/${memberId}`, { method: "DELETE" });
+      }
+
+      for (const nome of members.added) {
+        const payload: AdminCreateMemberInput = { nome, pre_cadastrado: true };
+        await apiFetch(`/admin/groups/${groupId}/members`, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+      }
+
+      if (Object.keys(values).length > 0) {
+        await apiFetch(`/admin/groups/${groupId}`, {
+          method: "PUT",
+          body: JSON.stringify(values),
+        });
+      }
+    } finally {
+      setDetailsRefreshKey((current) => current + 1);
+      await loadGroups();
+    }
   }
 
   useEffect(() => {
@@ -418,6 +446,7 @@ export default function ConvidadosPage() {
       <GroupsTable
         groups={groups}
         loadGroupDetails={loadGroupDetails}
+        refreshKey={detailsRefreshKey}
         onEdit={(group) => void handleEditGroup(group)}
         onDelete={handleDeleteGroup}
       />
@@ -426,6 +455,7 @@ export default function ConvidadosPage() {
         open={editingGroup !== null}
         group={editingGroup}
         onClose={() => setEditingGroup(null)}
+        loadGroupDetails={loadGroupDetails}
         onSave={handleSaveGroup}
       />
     </Stack>

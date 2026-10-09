@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -210,11 +210,27 @@ def create_group_member(
 
     ensure_confirmation_window_open(db)
 
+    nome = payload.nome.strip()
+    if not nome:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Informe o nome do convidado.",
+        )
+
+    ordem_exibicao = payload.ordem_exibicao
+    if ordem_exibicao is None:
+        current_max = db.scalar(
+            select(func.max(GroupMember.ordem_exibicao)).where(
+                GroupMember.group_id == group_id
+            )
+        )
+        ordem_exibicao = 0 if current_max is None else current_max + 1
+
     member = GroupMember(
         group_id=group_id,
-        nome=payload.nome,
+        nome=nome,
         pre_cadastrado=payload.pre_cadastrado,
-        ordem_exibicao=payload.ordem_exibicao,
+        ordem_exibicao=ordem_exibicao,
         created_by=current_admin.id,
         updated_by=current_admin.id,
     )

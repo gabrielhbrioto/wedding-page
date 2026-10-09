@@ -1,11 +1,12 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
+  Alert,
   Box,
   Chip,
   Collapse,
@@ -23,11 +24,17 @@ import {
 } from "@mui/material";
 
 import { CopyInviteLinkButton } from "@/components/ui/CopyInviteLinkButton";
-import type { AdminGroupDetails, AdminGroupSummary } from "@/types/admin";
+import type {
+  AdminGroupDetails,
+  AdminGroupMember,
+  AdminGroupSummary,
+} from "@/types/admin";
 
 type GroupsTableProps = {
   groups: AdminGroupSummary[];
   loadGroupDetails: (groupId: string) => Promise<AdminGroupDetails>;
+  /** Ao mudar, descarta os detalhes em cache e recarrega o grupo expandido. */
+  refreshKey?: number;
   onDelete?: (group: AdminGroupSummary) => Promise<void> | void;
   onEdit?: (group: AdminGroupSummary) => void;
 };
@@ -47,8 +54,8 @@ function getGroupTypeLabel(type: AdminGroupSummary["tipo_convite"]) {
       return "Cerimônia";
     case "CERIMONIA_JANTAR":
       return "Cerimônia + jantar";
-    case "JANTAR":
-      return "Jantar";
+    case "VIP":
+      return "VIP";
     default:
       return type;
   }
@@ -57,10 +64,7 @@ function getGroupTypeLabel(type: AdminGroupSummary["tipo_convite"]) {
 function getGroupStatusColor(status: AdminGroupSummary["rsvp_status"]) {
   switch (status) {
     case "RESPONDIDO":
-    case "CONFIRMADO":
       return "success";
-    case "RECUSADO":
-      return "error";
     case "PENDENTE":
     default:
       return "warning";
@@ -71,42 +75,32 @@ function getGroupStatusLabel(status: AdminGroupSummary["rsvp_status"]) {
   switch (status) {
     case "RESPONDIDO":
       return "Respondido";
-    case "CONFIRMADO":
-      return "Confirmado";
-    case "RECUSADO":
-      return "Recusado";
     case "PENDENTE":
     default:
       return "Pendente";
   }
 }
 
-function getMemberStatusColor(status?: string): ChipColor {
+function getMemberStatusColor(status?: AdminGroupMember["status"]): ChipColor {
   switch (status) {
     case "CERIMONIA_E_JANTAR":
     case "SOMENTE_CERIMONIA":
-    case "APENAS_CERIMONIA":
-    case "CONFIRMADO":
       return "success";
     case "AUSENTE":
       return "error";
-    case "PENDENTE":
     default:
       return "warning";
   }
 }
 
-function getMemberStatusLabel(status?: string) {
+function getMemberStatusLabel(status?: AdminGroupMember["status"]) {
   switch (status) {
     case "CERIMONIA_E_JANTAR":
-    case "CONFIRMADO":
       return "Confirmado cerimônia + jantar";
     case "SOMENTE_CERIMONIA":
-    case "APENAS_CERIMONIA":
       return "Apenas cerimônia";
     case "AUSENTE":
       return "Não irá";
-    case "PENDENTE":
     default:
       return "Pendente";
   }
@@ -115,36 +109,73 @@ function getMemberStatusLabel(status?: string) {
 export function GroupsTable({
   groups,
   loadGroupDetails,
+  refreshKey = 0,
   onDelete,
   onEdit,
 }: GroupsTableProps) {
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
-  const [loadingGroupId, setLoadingGroupId] = useState<string | null>(null);
   const [detailsById, setDetailsById] = useState<Record<string, AdminGroupDetails>>({});
+  const [errorsById, setErrorsById] = useState<Record<string, string>>({});
+  const [cacheKey, setCacheKey] = useState(refreshKey);
 
-  async function handleToggle(group: AdminGroupSummary) {
+  // Invalida o cache quando o pai sinaliza alteração (ex.: convidados editados).
+  if (cacheKey !== refreshKey) {
+    setCacheKey(refreshKey);
+    setDetailsById({});
+    setErrorsById({});
+  }
+
+  const needsDetails =
+    expandedGroupId !== null &&
+    !detailsById[expandedGroupId] &&
+    !errorsById[expandedGroupId];
+
+  useEffect(() => {
+    if (!expandedGroupId || !needsDetails) {
+      return;
+    }
+
+    let cancelled = false;
+
+    loadGroupDetails(expandedGroupId)
+      .then((details) => {
+        if (!cancelled) {
+          setDetailsById((current) => ({ ...current, [expandedGroupId]: details }));
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (!cancelled) {
+          setErrorsById((current) => ({
+            ...current,
+            [expandedGroupId]:
+              loadError instanceof Error
+                ? loadError.message
+                : "Não foi possível carregar os convidados.",
+          }));
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [expandedGroupId, needsDetails, loadGroupDetails]);
+
+  function handleToggle(group: AdminGroupSummary) {
     if (expandedGroupId === group.id) {
       setExpandedGroupId(null);
       return;
     }
 
+    // Permite nova tentativa caso o carregamento anterior tenha falhado.
+    setErrorsById((current) => {
+      if (!current[group.id]) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[group.id];
+      return next;
+    });
     setExpandedGroupId(group.id);
-
-    if (detailsById[group.id]) {
-      return;
-    }
-
-    setLoadingGroupId(group.id);
-
-    try {
-      const details = await loadGroupDetails(group.id);
-      setDetailsById((current) => ({
-        ...current,
-        [group.id]: details,
-      }));
-    } finally {
-      setLoadingGroupId((current) => (current === group.id ? null : current));
-    }
   }
 
   if (!groups.length) {
@@ -178,6 +209,8 @@ export function GroupsTable({
             const expanded = expandedGroupId === group.id;
             const details = detailsById[group.id];
             const members = details?.members ?? [];
+            const detailsError = errorsById[group.id];
+            const loadingDetails = expanded && !details && !detailsError;
 
             return (
               <Fragment key={group.id}>
@@ -270,7 +303,7 @@ export function GroupsTable({
                               Convidados do grupo
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              {loadingGroupId === group.id
+                              {loadingDetails
                                 ? "Carregando detalhes do grupo..."
                                 : `${members.length} convidado${members.length === 1 ? "" : "s"}`}
                             </Typography>
@@ -278,7 +311,9 @@ export function GroupsTable({
 
                           <Divider />
 
-                          {loadingGroupId === group.id ? (
+                          {detailsError ? (
+                            <Alert severity="error">{detailsError}</Alert>
+                          ) : loadingDetails ? (
                             <Typography variant="body2" color="text.secondary">
                               Buscando membros na API...
                             </Typography>

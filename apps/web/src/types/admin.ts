@@ -1,11 +1,10 @@
-export type AdminGroupType = "CERIMONIA" | "CERIMONIA_JANTAR" | "JANTAR";
+export type AdminGroupType = "CERIMONIA" | "CERIMONIA_JANTAR" | "VIP";
 
-export type AdminGroupRsvpStatus = "PENDENTE" | "CONFIRMADO" | "RECUSADO";
+export type AdminGroupRsvpStatus = "PENDENTE" | "RESPONDIDO";
 
 export type AdminMemberStatus =
-  | "PENDENTE"
-  | "CONFIRMADO"
-  | "APENAS_CERIMONIA"
+  | "CERIMONIA_E_JANTAR"
+  | "SOMENTE_CERIMONIA"
   | "AUSENTE";
 
 export type AdminDashboardSummary = {
@@ -39,7 +38,8 @@ export type AdminRsvpListItem = {
 export type AdminGroupMember = {
   id: string;
   nome: string;
-  status?: AdminMemberStatus;
+  /** `null` quando o convidado ainda não respondeu. */
+  status?: AdminMemberStatus | null;
   pre_cadastrado?: boolean;
   ordem_exibicao?: number;
   created_at?: string;
@@ -117,6 +117,17 @@ export type AdminUpdateGroupInput = Partial<AdminCreateGroupInput> & {
   tipo_convite?: AdminGroupType;
   rsvp_status?: AdminGroupRsvpStatus;
   responded_at?: string | null;
+};
+
+export type AdminCreateMemberInput = {
+  nome: string;
+  pre_cadastrado?: boolean;
+  ordem_exibicao?: number;
+};
+
+export type AdminGroupMembersChanges = {
+  added: string[];
+  removedIds: string[];
 };
 
 export type AdminGroupFormValues = {
